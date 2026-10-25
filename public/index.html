@@ -9,6 +9,7 @@
   <title>Home Shortlist</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23244b3e'/%3E%3Cpath d='M15 30 32 16l17 14v20H15Z' fill='none' stroke='%23f5f3eb' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M27 50V34h10v16' fill='none' stroke='%23f5f3eb' stroke-width='4'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="./styles.css">
+  <script src="./map.js" defer></script>
   <script src="./app.js" defer></script>
 </head>
 <body>
@@ -19,7 +20,16 @@
         <svg class="brand-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 14 16 4l12 10v14H4Z"/><path d="M12 28V17h8v11"/></svg>
         <span>Home Shortlist<span class="wordmark-dot">.</span></span>
       </a>
-      <span class="collection-tag"><span class="small-dot"></span> The saved collection</span>
+      <div class="view-switch" role="group" aria-label="View homes as a list or map">
+        <button id="view-list" type="button" aria-pressed="true" aria-controls="homes" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10M3 5h.01M3 10h.01M3 15h.01"/></svg>
+          List
+        </button>
+        <button id="view-map" type="button" aria-pressed="false" aria-controls="map-panel" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m2 5 5-2 6 2 5-2v12l-5 2-6-2-5 2Zm5-2v12m6-10v12"/></svg>
+          Map
+        </button>
+      </div>
     </header>
 
     <main>
@@ -61,6 +71,14 @@
           <p class="snapshot-label" id="snapshot-label"></p>
         </div>
         <div id="homes" class="home-grid" tabindex="-1" aria-busy="true"></div>
+        <section id="map-panel" class="map-panel" aria-label="Map of saved homes" hidden>
+          <div class="map-toolbar">
+            <p id="map-count" role="status" aria-live="polite">Select a price or group to explore.</p>
+            <button id="map-fit" type="button">Show all results</button>
+          </div>
+          <div id="map-notice" class="map-notice" role="status" hidden></div>
+          <div id="home-map" class="home-map" aria-label="Saved home locations" tabindex="0"></div>
+        </section>
         <div id="message" class="message-panel" role="status">
           <span class="loading-mark" aria-hidden="true"></span>
           <h3>Opening the collection</h3>

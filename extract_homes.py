@@ -2,6 +2,7 @@
 """Export only visible home-card fields from Firefox's saved Zillow HTML pages."""
 import html
 import json
+import math
 import re
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -21,6 +22,17 @@ def lot_label(sqft):
         return f"{sqft:,} sq ft"
     acres = sqft / 43560
     return f"{acres:.2f}".rstrip("0").rstrip(".") + (" acre" if acres == 1 else " acres")
+
+
+def listing_coordinates(property_data):
+    coordinates = {}
+    for field, limit in (("latitude", 90), ("longitude", 180)):
+        value = property_data.get(field)
+        if (type(value) not in (int, float) or not math.isfinite(value)
+                or not -limit <= value <= limit):
+            raise ValueError(f"Invalid {field} for listing {property_data.get('zpid', 'unknown')}")
+        coordinates[field] = value
+    return coordinates
 
 
 def load_exports(source):
@@ -46,6 +58,7 @@ def extract(source=ROOT / "source", destination=ROOT / "public"):
     (destination / "images").mkdir(parents=True, exist_ok=True)
     for zpid in EXPECTED_IDS:
         p = properties[zpid]
+        coordinates = listing_coordinates(p)
         plain, thumbnail = cards[zpid]
         for value, suffix in [(p["price"], ""), (p["bedrooms"], "bds?"),
                               (p["bathrooms"], "ba"), (p["livingArea"], "sqft")]:
@@ -71,6 +84,7 @@ def extract(source=ROOT / "source", destination=ROOT / "public"):
         attribution = p.get("attributionInfo") or {}
         homes.append({
             "id": zpid, "address": full_address, **address,
+            **coordinates,
             "price": p["price"], "beds": p["bedrooms"], "baths": p["bathrooms"],
             "sqft": p["livingArea"], "lotSqft": p["lotSize"],
             "lotLabel": lot_label(p["lotSize"]), "image": image,

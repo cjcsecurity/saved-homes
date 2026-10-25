@@ -32,3 +32,11 @@ GitHub Pages serves only `public/` through `.github/workflows/pages.yml`. The wo
 The host was selected using the AI toolkit's [free-for-dev reference](https://github.com/ripienaar/free-for-dev/tree/4dbda5ecff8f86164338dd50bd59f9920752ad5c). As verified October 25, 2026, [GitHub Pages is free for public repositories](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits), with a 1 GB published-site limit and a soft bandwidth limit of 100 GB per month. No paid services or Vercel resources are required.
 
 Enable GitHub Actions as the Pages publishing source before deploying. The repository and published site are public.
+
+## Map view
+
+The List / Map control at the top switches views; each visit starts in List view. Search and city filters stay in sync. Map groups expand into price markers as you zoom; selecting a marker opens a photo and property preview with a Zillow link. “Show all results” fits the current selection again.
+
+Coordinates come from the same Zillow listing snapshot as the card details. Leaflet 1.9.4 and Leaflet.markercluster 1.5.3 are pinned in `public/vendor/`, with their license files; they load only after selecting Map. OpenStreetMap tiles are requested directly with normal browser caching and attribution. No API key, paid service, geocoding request, or background tile prefetch is used. Tile service availability is best-effort; List view remains available if the map cannot load. See the [OpenStreetMap tile policy](https://operations.osmfoundation.org/policies/tiles/).
+
+Run all gallery and map tests with `node --test tests/*.test.cjs`.

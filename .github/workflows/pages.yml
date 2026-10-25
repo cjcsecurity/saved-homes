@@ -28,7 +28,7 @@ jobs:
       - name: Verify listing data
         run: python3 -m unittest test_data.py
       - name: Verify gallery interactions
-        run: node --test tests/ui.test.cjs
+        run: node --test tests/*.test.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload public site only

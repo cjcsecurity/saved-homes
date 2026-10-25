@@ -1,4 +1,4 @@
-/* A dependency-free, read-only snapshot of the saved collection. */
+/* A read-only snapshot of the saved collection, with an optional map. */
 function normalizeSearch(value) {
   return String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 }
@@ -59,7 +59,7 @@ function cardLabel(home) {
   return `${home.address}. ${formatPrice(home.price)}. ${formatNumber(home.beds)} bedrooms, ${formatNumber(home.baths)} bathrooms, ${formatNumber(home.sqft)} square feet. ${home.lotLabel ? `${home.lotLabel} lot.` : 'Lot size unavailable.'} View listing on Zillow (opens in a new tab).`;
 }
 
-function initialize(document) {
+function initialize(document, options = {}) {
   const grid = document.querySelector('#homes');
   const search = document.querySelector('#search');
   const sort = document.querySelector('#sort');
@@ -68,6 +68,41 @@ function initialize(document) {
   const resultCount = document.querySelector('#result-count');
   let homes = [];
   let selectedCity = '';
+  let view = 'list';
+  const listButton = document.querySelector('#view-list');
+  const mapButton = document.querySelector('#view-map');
+  const mapPanel = document.querySelector('#map-panel');
+  const sortWrap = document.querySelector('.sort-wrap');
+  const mapFactory = options.mapFactory || document.defaultView.HomeMap?.createMapView;
+  const mapView = mapFactory?.({
+    document, container: document.querySelector('#home-map'),
+    notice: document.querySelector('#map-notice'), count: document.querySelector('#map-count'),
+    fitButton: document.querySelector('#map-fit'), formatPrice, formatNumber, listingUrl,
+  });
+
+  function setView(next) {
+    view = next === 'map' ? 'map' : 'list';
+    document.querySelector('.page-shell').classList.toggle('map-mode', view === 'map');
+    listButton.setAttribute('aria-pressed', String(view === 'list'));
+    mapButton.setAttribute('aria-pressed', String(view === 'map'));
+    grid.hidden = view !== 'list';
+    mapPanel.hidden = view !== 'map';
+    sortWrap.hidden = view === 'map';
+    document.querySelector('.skip-link').href = view === 'map' ? '#home-map' : '#homes';
+    if (view === 'list') mapView?.hide();
+    render();
+    if (view === 'map') {
+      if (mapView) mapView.show(selectHomes(homes, { query: search.value, city: selectedCity, sort: sort.value }));
+      else {
+        const notice = document.querySelector('#map-notice');
+        notice.textContent = 'The map couldn’t load. Please reload, or switch back to List view.';
+        notice.hidden = false;
+      }
+    }
+  }
+
+  listButton.addEventListener('click', () => setView('list'));
+  mapButton.addEventListener('click', () => setView('map'));
 
   function el(tag, className, text) {
     const element = document.createElement(tag);
@@ -156,6 +191,7 @@ function initialize(document) {
     const selected = selectHomes(homes, { query: search.value, city: selectedCity, sort: sort.value });
     grid.replaceChildren(...selected.map(createCard));
     grid.setAttribute('aria-busy', 'false');
+    mapView?.update(selected);
     resultCount.textContent = selected.length === homes.length
       ? `${homes.length} homes in your collection`
       : `${selected.length} of ${homes.length} homes`;
@@ -187,7 +223,7 @@ function initialize(document) {
     grid.setAttribute('aria-busy', 'true');
     resultCount.textContent = 'Gathering your homes…';
     try {
-      const response = await fetch('./homes.json');
+      const response = await (options.fetch || fetch)('./homes.json');
       if (!response.ok) throw new Error(`Collection response: ${response.status}`);
       const data = await response.json();
       const entries = Array.isArray(data) ? data : data.homes;
@@ -203,6 +239,8 @@ function initialize(document) {
       const date = formatDate(data.updatedAt);
       document.querySelector('#snapshot-label').textContent = date ? `Saved snapshot · ${date}` : 'Saved snapshot';
       document.querySelector('#footer-date').textContent = date ? `Captured ${date}.` : '';
+      listButton.disabled = false;
+      mapButton.disabled = false;
       search.disabled = false;
       sort.disabled = false;
       buildCityFilters();
@@ -217,10 +255,10 @@ function initialize(document) {
 
   search.addEventListener('input', render);
   sort.addEventListener('change', render);
-  load();
+  return load();
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { normalizeSearch, selectHomes, formatNumber, formatPrice, formatDate, listingUrl, cardLabel };
+  module.exports = { normalizeSearch, selectHomes, formatNumber, formatPrice, formatDate, listingUrl, cardLabel, initialize };
 }
 if (typeof document !== 'undefined') initialize(document);
