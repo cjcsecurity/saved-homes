@@ -1,0 +1,18 @@
+# Raw browser exports can contain account data. Keep them local.
+/source/
+
+# Local tools and generated caches.
+__pycache__/
+*.py[cod]
+node_modules/
+.DS_Store
+.env
+.env.*
+
+# Browser verification artifacts.
+/screenshots/
+/test-results/
+/playwright-report/
+*screenshot*.png
+*screenshot*.jpg
+*screenshot*.webp

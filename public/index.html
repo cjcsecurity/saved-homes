@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="A personal collection of saved homes, with listing photos, prices, home details and lot sizes.">
+  <meta name="theme-color" content="#244b3e">
+  <title>Home Shortlist</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23244b3e'/%3E%3Cpath d='M15 30 32 16l17 14v20H15Z' fill='none' stroke='%23f5f3eb' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M27 50V34h10v16' fill='none' stroke='%23f5f3eb' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#homes">Skip to homes</a>
+  <div class="page-shell">
+    <header class="masthead">
+      <a class="wordmark" href="./" aria-label="Home Shortlist home">
+        <svg class="brand-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 14 16 4l12 10v14H4Z"/><path d="M12 28V17h8v11"/></svg>
+        <span>Home Shortlist<span class="wordmark-dot">.</span></span>
+      </a>
+      <span class="collection-tag"><span class="small-dot"></span> The saved collection</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <p class="eyebrow">Room for what’s next</p>
+          <h1 id="page-title">A place to call <em>home.</em></h1>
+          <p class="intro-description">Your saved homes, all in one place. Take a closer look.</p>
+        </div>
+        <div class="collection-summary" aria-label="Collection summary" hidden>
+          <div class="summary-stat"><strong id="total-count">—</strong><span>saved homes</span></div>
+          <span class="summary-divider" aria-hidden="true"></span>
+          <div class="summary-stat"><strong id="price-range">—</strong><span>asking price range</span></div>
+        </div>
+      </section>
+
+      <section class="collection" aria-labelledby="collection-heading">
+        <h2 class="sr-only" id="collection-heading">Browse your saved homes</h2>
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+            <label class="sr-only" for="search">Search address, city or ZIP code</label>
+            <input id="search" type="search" placeholder="Search address, city or ZIP" autocomplete="off" disabled>
+          </div>
+          <div class="sort-wrap">
+            <label for="sort">Sort by</label>
+            <select id="sort" disabled>
+              <option value="saved">Recently saved</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="lot-desc">Largest lot</option>
+              <option value="sqft-desc">Largest home</option>
+            </select>
+          </div>
+        </div>
+        <div id="city-filters" class="city-filters" role="group" aria-label="Filter by city" hidden></div>
+        <div class="results-line">
+          <p id="result-count" role="status" aria-live="polite">Gathering your homes…</p>
+          <p class="snapshot-label" id="snapshot-label"></p>
+        </div>
+        <div id="homes" class="home-grid" tabindex="-1" aria-busy="true"></div>
+        <div id="message" class="message-panel" role="status">
+          <span class="loading-mark" aria-hidden="true"></span>
+          <h3>Opening the collection</h3>
+          <p>Your saved homes will appear here in a moment.</p>
+        </div>
+        <noscript><p class="message-panel">Please enable JavaScript to browse this collection.</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="footer-brand">Good things start with a shortlist.</p>
+      <p>Listing information and photos from Zillow and the credited brokers. <span id="footer-date"></span> This is a saved snapshot; open a listing for its latest price and availability.</p>
+    </footer>
+  </div>
+</body>
+</html>
